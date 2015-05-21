@@ -11,7 +11,21 @@ import Language.Haskell.TH.Quote (QuasiQuoter(..))
 import Language.Haskell.TH.Syntax (Lift(..))
 import Network.URI (URI(..), URIAuth(..), parseURI)
 
-staticURI :: String -> TExpQ URI
+-- | 'staticURI' parses a specified string at compile time
+--   and return an expression representing the URI when it's a valid URI.
+--   Otherwise, it emits an error.
+--
+-- >>> :set -XTemplateHaskell
+-- >>> $$(staticURI "http://www.google.com/")
+-- http://www.google.com/
+--
+-- >>> $$(staticURI "http://www.google.com/##")
+-- <BLANKLINE>
+-- <interactive>...
+-- ... Invalid URI: http://www.google.com/##
+-- ...
+staticURI :: String -- ^ String representation of a URI
+          -> TExpQ URI -- ^ URI
 staticURI (parseURI -> Just uri) = [|| uri ||]
 staticURI uri = fail $ "Invalid URI: " ++ uri
 
@@ -21,6 +35,15 @@ instance Lift URI where
 instance Lift URIAuth where
     lift (URIAuth {..}) = [| URIAuth {..} |]
 
+-- | 'uri' is a quasi quoter for 'staticURI'.
+--
+-- >>> :set -XQuasiQuotes
+-- >>> [uri|http://www.google.com/|]
+-- http://www.google.com/
+--
+-- >>> [uri|http://www.google.com/##|]
+-- <BLANKLINE>
+-- <interactive>... Invalid URI: http://www.google.com/##
 uri :: QuasiQuoter
 uri = QuasiQuoter {
     quoteExp = fmap unType . staticURI,
