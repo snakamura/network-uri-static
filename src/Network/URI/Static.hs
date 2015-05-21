@@ -11,11 +11,14 @@ import Language.Haskell.TH.Quote (QuasiQuoter(..))
 import Language.Haskell.TH.Syntax (Lift(..))
 import Network.URI (URI(..), URIAuth(..), parseURI)
 
+-- $setup
+-- >>> :set -XTemplateHaskell
+-- >>> :set -XQuasiQuotes
+
 -- | 'staticURI' parses a specified string at compile time
 --   and return an expression representing the URI when it's a valid URI.
 --   Otherwise, it emits an error.
 --
--- >>> :set -XTemplateHaskell
 -- >>> $$(staticURI "http://www.google.com/")
 -- http://www.google.com/
 --
@@ -37,7 +40,6 @@ instance Lift URIAuth where
 
 -- | 'uri' is a quasi quoter for 'staticURI'.
 --
--- >>> :set -XQuasiQuotes
 -- >>> [uri|http://www.google.com/|]
 -- http://www.google.com/
 --
