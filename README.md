@@ -1,5 +1,7 @@
 # network-uri-static
 
+[![Join the chat at https://gitter.im/snakamura/network-uri-static](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/snakamura/network-uri-static?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 `network-uri-static` is a small utility for Haskell that allows you to declare static URIs in type-safe manner.
 
 ## Tutorial
