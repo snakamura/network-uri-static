@@ -45,7 +45,9 @@ instance Lift URIAuth where
 --
 -- >>> [uri|http://www.google.com/##|]
 -- <BLANKLINE>
--- <interactive>... Invalid URI: http://www.google.com/##
+-- <interactive>...
+-- ... Invalid URI: http://www.google.com/##
+-- ...
 uri :: QuasiQuoter
 uri = QuasiQuoter {
     quoteExp = fmap unType . staticURI,
