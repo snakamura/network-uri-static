@@ -1,19 +1,28 @@
 {-# LANGUAGE RecordWildCards, TemplateHaskell, ViewPatterns #-}
 
 module Network.URI.Static
-    ( staticURI
-    , uri
+    (
+    -- * Absolute URIs
+      uri
+    , staticURI
+    -- * Relative URIs
+    , relativeReference
+    , staticRelativeReference
     ) where
 
 import Language.Haskell.TH (unType)
 import Language.Haskell.TH.Lib (TExpQ)
 import Language.Haskell.TH.Quote (QuasiQuoter(..))
 import Language.Haskell.TH.Syntax (Lift(..))
-import Network.URI (URI(..), URIAuth(..), parseURI)
+import Network.URI (URI(..), URIAuth(..), parseURI, parseRelativeReference)
 
 -- $setup
 -- >>> :set -XTemplateHaskell
 -- >>> :set -XQuasiQuotes
+
+----------------------------------------------------------------------------
+-- Absolute URIs
+----------------------------------------------------------------------------
 
 -- | 'staticURI' parses a specified string at compile time
 --   and return an expression representing the URI when it's a valid URI.
@@ -32,12 +41,6 @@ staticURI :: String -- ^ String representation of a URI
 staticURI (parseURI -> Just uri) = [|| uri ||]
 staticURI uri = fail $ "Invalid URI: " ++ uri
 
-instance Lift URI where
-    lift (URI {..}) = [| URI {..} |]
-
-instance Lift URIAuth where
-    lift (URIAuth {..}) = [| URIAuth {..} |]
-
 -- | 'uri' is a quasi quoter for 'staticURI'.
 --
 -- >>> [uri|http://www.google.com/|]
@@ -55,3 +58,52 @@ uri = QuasiQuoter {
     quoteType = undefined,
     quoteDec = undefined
 }
+
+----------------------------------------------------------------------------
+-- Relative URIs
+----------------------------------------------------------------------------
+
+-- | 'staticRelativeReference' parses a specified string at compile time and
+--   return an expression representing the URI when it's a valid relative
+--   reference. Otherwise, it emits an error.
+--
+-- >>> $$(staticRelativeReference "/foo?bar=baz#quux")
+-- /foo?bar=baz#quux
+--
+-- >>> $$(staticRelativeReference "http://www.google.com/")
+-- <BLANKLINE>
+-- <interactive>...
+-- ... Invalid relative reference: http://www.google.com/
+-- ...
+staticRelativeReference :: String -- ^ String representation of a reference
+                        -> TExpQ URI -- ^ Refererence
+staticRelativeReference (parseRelativeReference -> Just ref) = [|| ref ||]
+staticRelativeReference ref = fail $ "Invalid relative reference: " ++ ref
+
+-- | 'relativeReference' is a quasi quoter for 'staticRelativeReference'.
+--
+-- >>> [relativeReference|/foo?bar=baz#quux|]
+-- /foo?bar=baz#quux
+--
+-- >>> [relativeReference|http://www.google.com/|]
+-- <BLANKLINE>
+-- <interactive>...
+-- ... Invalid relative reference: http://www.google.com/
+-- ...
+relativeReference :: QuasiQuoter
+relativeReference = QuasiQuoter {
+    quoteExp = fmap unType . staticRelativeReference,
+    quotePat = undefined,
+    quoteType = undefined,
+    quoteDec = undefined
+}
+
+----------------------------------------------------------------------------
+-- Instances and helpers
+----------------------------------------------------------------------------
+
+instance Lift URI where
+    lift (URI {..}) = [| URI {..} |]
+
+instance Lift URIAuth where
+    lift (URIAuth {..}) = [| URIAuth {..} |]
