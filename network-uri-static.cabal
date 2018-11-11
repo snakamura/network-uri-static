@@ -1,5 +1,5 @@
 name: network-uri-static
-version: 0.1.1.0
+version: 0.1.2.0
 synopsis: A small utility to declare type-safe static URIs
 description:
   This library helps you declare type-safe static URIs by parsing URIs at compile time.
@@ -32,14 +32,22 @@ source-repository head
     type: git
     location: git://github.com/snakamura/network-uri-static.git
 
+Flag defer-to-network-uri
+  Default: False
+
 library
-  exposed-modules: Network.URI.Static
   other-extensions: RecordWildCards,
                     TemplateHaskell,
                     ViewPatterns
-  build-depends: base >= 4.7 && < 5,
-                 network-uri >= 2.5 && < 3,
-                 template-haskell >= 2.9 && < 3
+  if flag(defer-to-network-uri)
+    build-depends: base >= 4.7 && < 5,
+                   network-uri >= 2.7 && < 3,
+                   template-haskell >= 2.9 && < 3
+  else
+    exposed-modules: Network.URI.Static
+    build-depends: base >= 4.7 && < 5,
+                   network-uri >= 2.5 && < 2.7,
+                   template-haskell >= 2.9 && < 3
   hs-source-dirs: src
   default-language: Haskell2010
 
