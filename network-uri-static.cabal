@@ -1,5 +1,5 @@
 name: network-uri-static
-version: 0.1.2.0
+version: 0.1.2.1
 synopsis: A small utility to declare type-safe static URIs
 description:
   This library helps you declare type-safe static URIs by parsing URIs at compile time.
@@ -36,7 +36,8 @@ Flag defer-to-network-uri
   Default: False
 
 library
-  other-extensions: RecordWildCards,
+  other-extensions: CPP,
+                    RecordWildCards,
                     TemplateHaskell,
                     ViewPatterns
   if flag(defer-to-network-uri)
