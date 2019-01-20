@@ -1,4 +1,8 @@
-{-# LANGUAGE RecordWildCards, TemplateHaskell, ViewPatterns #-}
+{-# LANGUAGE CPP, RecordWildCards, TemplateHaskell, ViewPatterns #-}
+
+#if MIN_VERSION_network_uri(2,7,0)
+module Network.URI.Static () where
+#else
 
 module Network.URI.Static
     (
@@ -107,3 +111,5 @@ instance Lift URI where
 
 instance Lift URIAuth where
     lift (URIAuth {..}) = [| URIAuth {..} |]
+
+#endif
