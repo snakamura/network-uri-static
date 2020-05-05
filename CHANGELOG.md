@@ -1,3 +1,7 @@
+# 0.1.2.2
+
+* Export nothing if network-uri >= 2.6.2 instead of 2.7.0.
+
 # 0.1.2.1
 
 * The contents have been merged into network-uri, so the module is now
